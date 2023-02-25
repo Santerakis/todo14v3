@@ -20,10 +20,12 @@ export type ChangeTodolistFilterActionType = {
     id: string
     filter: FilterValuesType
 }
+type SetTodosType = ReturnType<typeof setTodos>
 
 type ActionsType = RemoveTodolistActionType | AddTodolistActionType
     | ChangeTodolistTitleActionType
     | ChangeTodolistFilterActionType
+    | SetTodosType
 
 const initialState: Array<TodolistDomainType> = [
     /*{id: todolistId1, title: 'What to learn', filter: 'all', addedDate: '', order: 0},
@@ -37,6 +39,11 @@ export type TodolistDomainType = TodolistType & {
 
 export const todolistsReducer = (state: Array<TodolistDomainType> = initialState, action: ActionsType): Array<TodolistDomainType> => {
     switch (action.type) {
+        case "SET-TODOS": {
+            return action.todos.map((tl) => ({...tl, filter: "all"}))
+            // [...state, ...action.todos.map((tl) => ({...tl, filter: "all"}))]  это излишнеб и так мап возв. копию массива, но тут ошибка нужно потренироваться решить и такой вариант(этот вариант для онлайн приложения)
+        }
+
         case 'REMOVE-TODOLIST': {
             return state.filter(tl => tl.id !== action.id)
         }
@@ -83,3 +90,23 @@ export const changeTodolistFilterAC = (id: string, filter: FilterValuesType): Ch
     return {type: 'CHANGE-TODOLIST-FILTER', id: id, filter: filter}
 }
 
+export const setTodos = (todos: TodolistType[]) => {
+    return {
+        type: 'SET-TODOS',
+        todos
+    } as const
+}
+// type SetTodosType = ReturnType<typeof setTodos>
+
+// export const setTodos = (todos: TodolistType[]): SetTodosType => {
+//     return {
+//         type: 'SET-TODOS',
+//         todos
+//     }
+// }
+// type SetTodosType = {
+//     type: 'SET-TODOS'
+//     todos: TodolistType[]
+// }
+//
+// type SomeType = typeof setTodos
