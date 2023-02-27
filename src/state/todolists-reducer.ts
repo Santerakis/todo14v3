@@ -112,7 +112,7 @@ export const setTodos = (todos: TodolistType[]) => {
 //
 // type SomeType = typeof setTodos
 
-export const getTodo = (dispatch: Dispatch) => {
+export const getTodoTC = () => (dispatch: Dispatch) => {
     todolistsAPI.getTodolists()
         .then((res) => {
             dispatch(setTodos(res.data))
