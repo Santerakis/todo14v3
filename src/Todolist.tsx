@@ -7,6 +7,7 @@ import { Delete } from '@mui/icons-material';
 import {Task} from './Task'
 import {TaskStatuses, TaskType} from './api/todolists-api'
 import {FilterValuesType} from './state/todolists-reducer'
+import {log} from "util";
 
 type PropsType = {
     id: string
@@ -50,7 +51,7 @@ export const Todolist = React.memo(function (props: PropsType) {
     if (props.filter === 'completed') {
         tasksForTodolist = props.tasks.filter(t => t.status === TaskStatuses.Completed)
     }
-
+    console.log('tasksForTodolist: ', tasksForTodolist)
     return <div>
         <h3><EditableSpan value={props.title} onChange={changeTodolistTitle}/>
             <IconButton onClick={removeTodolist}>
@@ -60,7 +61,7 @@ export const Todolist = React.memo(function (props: PropsType) {
         <AddItemForm addItem={addTask}/>
         <div>
             {
-                tasksForTodolist?.map(t => <Task key={t.id} task={t} todolistId={props.id}
+                tasksForTodolist.map(t => <Task key={t.id} task={t} todolistId={props.id} // вариант решения проблемы, но не аргитектурный: tasksForTodolist?.map
                                           removeTask={props.removeTask}
                                           changeTaskTitle={props.changeTaskTitle}
                                           changeTaskStatus={props.changeTaskStatus}
