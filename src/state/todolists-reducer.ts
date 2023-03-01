@@ -42,7 +42,9 @@ export const todolistsReducer = (state: Array<TodolistDomainType> = initialState
     switch (action.type) {
         case "SET-TODOS": {
             return action.todos.map((tl) => ({...tl, filter: "all"}))
-            // [...state, ...action.todos.map((tl) => ({...tl, filter: "all"}))]  это излишнеб и так мап возв. копию массива, но тут ошибка нужно потренироваться решить и такой вариант(этот вариант для онлайн приложения)
+            // [...state, action.todos.map((tl) => ({...tl, filter: "all"}))]  это излишнеб и так мап возв. копию массива, но тут ошибка нужно потренироваться решить и такой вариант(этот вариант для онлайн приложения)
+
+            // return[...state, action.todos.map((tl) => ({...tl, filter: "all"}))]
         }
 
         case 'REMOVE-TODOLIST': {
