@@ -1,8 +1,9 @@
-import { TasksStateType } from '../App';
-import { v1 } from 'uuid';
+import {TasksStateType} from '../App';
+import {v1} from 'uuid';
 import {AddTodolistActionType, RemoveTodolistActionType, setTodos, SetTodosType} from './todolists-reducer';
-import {TaskPriorities, TaskStatuses, TaskType, todolistsAPI} from '../api/todolists-api'
+import {TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType} from '../api/todolists-api'
 import {Dispatch} from "redux";
+import {AppRootStateType} from "./store";
 
 export type RemoveTaskActionType = {
     type: 'REMOVE-TASK',
@@ -61,9 +62,10 @@ const initialState: TasksStateType = {
 
 export const tasksReducer = (state: TasksStateType = initialState, action: ActionsType): TasksStateType => {
     switch (action.type) {
-        case "SET-TASKS":{
-            return {...state,
-            [action.todolistId]: action.tasks
+        case "SET-TASKS": {
+            return {
+                ...state,
+                [action.todolistId]: action.tasks
             }
         }
         case 'SET-TODOS': {  //этот кейс можно было написать forin-ом
@@ -81,8 +83,9 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Actio
             return stateCopy;
         }
         case 'ADD-TASK': {
-            return  {...state,
-            [action.todolistId]: [action.task, ...state[action.todolistId]]
+            return {
+                ...state,
+                [action.todolistId]: [action.task, ...state[action.todolistId]]
             }
             // const stateCopy = {...state}
             // const newTask: TaskType = {
@@ -163,13 +166,25 @@ export const deleteTaskTC = (todolistId: string, taskId: string) => (dispatch: D
 export const createTaskTC = (todolistId: string, title: string) => (dispatch: Dispatch) => {
     todolistsAPI.createTask(todolistId, title)    //берем айди из замыкания
         .then((res) => {
-            dispatch(addTaskAC(res.data.data.item , todolistId))  //todolistId взяли из замыкания, но можно и из item.todolistId
+            dispatch(addTaskAC(res.data.data.item, todolistId))  //todolistId взяли из замыкания, но можно и из item.todolistId
         })
 }
-export const updateTaskTC = (todolistId: string, taskId: string) => (dispatch: Dispatch) => {
-    todolistsAPI.createTask(todolistId, title)
-        .then((res) => {
-            dispatch(addTaskAC(res.data.data.item , todolistId))  //todolistId взяли из замыкания, но можно и из item.todolistId
-        })
-}
+export const updateTaskTC = (todolistId: string, taskId: string, status: TaskStatuses) => (dispatch: Dispatch, getState: () => AppRootStateType) => {
+    const task = getState().tasks[todolistId].find((t) => t.id === taskId)
 
+    if (task) {
+        let model: UpdateTaskModelType = {    //можно две диструкторизации сначала достали не нудное и rest заюзать
+            title: task.title,
+            deadline: task.deadline,
+            description: task.description,
+            priority: task.priority,
+            startDate: task.startDate,
+            status
+        }
+        todolistsAPI.updateTask(todolistId, taskId, model)
+            .then((res) => {
+                dispatch(changeTaskStatusAC(taskId, status, todolistId))  //todolistId взяли из замыкания, но можно и из item.todolistId
+            })
+    }
+
+}
