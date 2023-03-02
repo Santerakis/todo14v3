@@ -24,7 +24,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType, AppThunkDispatch, useAppDispatch, useAppSelector} from './state/store';
 import {TaskStatuses, TaskType, todolistsAPI} from './api/todolists-api'
 
-//////////////TEST///////////////
+
 export type TasksStateType = {
     [key: string]: Array<TaskType>
 }
